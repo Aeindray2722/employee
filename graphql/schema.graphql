@@ -1,0 +1,125 @@
+"A datetime string with format `Y-m-d H:i:s`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+scalar Upload
+  @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
+
+type Query {
+
+    user(
+        id: ID @eq @rules(apply: ["prohibits:email", "required_without:email"])
+        email: String @eq @rules(apply: ["prohibits:id", "required_without:id", "email"])
+    ): User @find
+
+    users(
+        name: String @where(operator: "like")
+    ): [User!]! @paginate(defaultCount: 10)
+
+    employee(
+        id: ID!
+    ): Employee
+        @guard
+        @field(
+            resolver: "App\\GraphQL\\Queries\\EmployeeQuery@employee"
+        )
+
+
+
+employees(
+    page: Int
+    first: Int
+): EmployeePaginator
+    @field(resolver: "App\\GraphQL\\Queries\\EmployeeQuery@employees")
+
+
+}
+
+type EmployeePaginator {
+    data: [Employee!]!
+    paginatorInfo: PaginatorInfo!
+}
+
+type PaginatorInfo {
+    currentPage: Int!
+    lastPage: Int!
+    total: Int!
+    hasMorePages: Boolean!
+}
+
+type Mutation {
+
+    createEmployee(
+        first_name: String! @rules(apply: ["required", "string", "max:255"])
+        last_name: String! @rules(apply: ["required", "string", "max:255"])
+        email: String! @rules(apply: ["required", "email", "max:255", "unique:employees,email"])
+        phone: String! @rules(apply: ["required", "string", "max:20"])
+        address: String! @rules(apply: ["required", "string", "max:500"])
+        salary: Float! @rules(apply: ["required", "numeric", "min:0"])
+    ): Employee @guard @create
+
+    updateEmployee(
+        id: ID!
+        first_name: String @rules(apply: ["nullable", "string", "max:255"])
+        last_name: String @rules(apply: ["nullable", "string", "max:255"])
+        email: String @rules(apply: ["nullable", "email", "max:255", "unique:employees,email"])
+        phone: String @rules(apply: ["nullable", "string", "max:20"])
+        address: String @rules(apply: ["nullable", "string", "max:500"])
+        salary: Float @rules(apply: ["nullable", "numeric", "min:0"])
+    ): Employee @guard @update
+
+    deleteEmployee(id: ID! @whereKey): Boolean @guard @delete
+
+    login(
+        username: String!
+        password: String!
+    ): AuthPayload
+        @field(
+            resolver: "App\\GraphQL\\Mutations\\AuthMutation@login"
+        )
+
+    generateEmployees(
+        count: Int!
+    ): String
+        @field(
+            resolver: "App\\GraphQL\\Mutations\\EmployeeMutation@generate"
+        )
+
+    importEmployees(
+        file: Upload!
+    ): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Mutations\\ExcelMutation@import"
+        )
+
+    exportEmployees: String
+      @guard
+        @field(
+            resolver: "App\\GraphQL\\Mutations\\ExcelMutation@export"
+        )
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    email_verified_at: DateTime
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Employee {
+    id: ID!
+    first_name: String!
+    last_name: String!
+    email: String!
+    phone: String!
+    address: String!
+    salary: Float!
+    created_at: DateTime
+    updated_at: DateTime
+}
+
+type AuthPayload {
+    token: String!
+}
+

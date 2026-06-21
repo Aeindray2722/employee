@@ -45,6 +45,16 @@ This project is a Laravel + GraphQL backend for managing employees. It uses:
    php artisan serve
    ```
 
+## Database Setup
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=employee_api
+DB_USERNAME=root
+DB_PASSWORD=
+
+
 ## Authentication
 
 Use the `login` mutation to obtain a Passport token.

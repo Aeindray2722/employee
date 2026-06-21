@@ -1,0 +1,22 @@
+"A datetime string with format `Y-m-d H:i:s`."
+scalar DateTime
+  @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+scalar Upload
+  @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
+
+type PaginatorInfo {
+    currentPage: Int!
+    lastPage: Int!
+    total: Int!
+    hasMorePages: Boolean!
+}
+
+type EmployeePaginator {
+    data: [Employee!]!
+    paginatorInfo: PaginatorInfo!
+}
+
+type Query
+
+type Mutation

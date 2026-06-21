@@ -1,0 +1,84 @@
+extend type Query {
+
+    employee(
+        id: ID!
+    ): Employee
+        @guard
+        @field(
+            resolver: "App\\GraphQL\\Queries\\EmployeeQuery@employee"
+        )
+
+    employees(
+        page: Int
+        first: Int
+    ): EmployeePaginator
+        @field(
+            resolver: "App\\GraphQL\\Queries\\EmployeeQuery@employees"
+        )
+}
+
+extend type Mutation {
+
+    createEmployee(
+        first_name: String!
+        last_name: String!
+        email: String!
+        phone: String!
+        address: String!
+        salary: Float!
+    ): Employee
+        @guard
+        @field(
+            resolver: "App\\GraphQL\\Mutations\\EmployeeMutation@create"
+        )
+
+    updateEmployee(
+        id: ID!
+        first_name: String @rules(apply: ["nullable", "string", "max:255"])
+        last_name: String @rules(apply: ["nullable", "string", "max:255"])
+        email: String @rules(apply: ["nullable", "email", "max:255", "unique:employees,email"])
+        phone: String @rules(apply: ["nullable", "string", "max:20"])
+        address: String @rules(apply: ["nullable", "string", "max:500"])
+        salary: Float @rules(apply: ["nullable", "numeric", "min:0"])
+    ): Employee @guard @update
+
+    
+
+    deleteEmployee(
+    id: ID! @whereKey
+): Employee
+    @guard
+    @delete(model: "App\\Models\\Employee")
+
+    generateEmployees(
+        count: Int!
+    ): String
+        @field(
+            resolver: "App\\GraphQL\\Mutations\\EmployeeMutation@generate"
+        )
+
+    importEmployees(
+        file: Upload!
+    ): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Mutations\\ExcelMutation@import"
+        )
+
+    exportEmployees: String
+        @guard
+        @field(
+            resolver: "App\\GraphQL\\Mutations\\ExcelMutation@export"
+        )
+}
+
+type Employee {
+    id: ID!
+    first_name: String!
+    last_name: String!
+    email: String!
+    phone: String!
+    address: String!
+    salary: Float!
+    created_at: DateTime
+    updated_at: DateTime
+}

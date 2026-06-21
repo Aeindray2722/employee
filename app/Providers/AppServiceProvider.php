@@ -20,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Use the API guard for authentication requests
         Auth::shouldUse('api');
     }
 }

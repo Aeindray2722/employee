@@ -133,7 +133,7 @@ docs/
 Sample Excel file:
 
 ```text
-docs/sample-employees.xlsx
+docs/sample-employees.csv
 ```
 
 API documentation:

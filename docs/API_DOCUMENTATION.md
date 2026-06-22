@@ -307,7 +307,8 @@ Exports employee records to Excel.
 Location:
 
 ```text
-docs/sample-employees.xlsx
+docs/sample-employees.csv
+docs/employees_10000.csv
 ```
 
 Expected columns:
